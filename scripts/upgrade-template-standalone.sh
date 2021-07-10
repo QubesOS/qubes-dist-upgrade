@@ -45,10 +45,10 @@ elif [ -e /etc/debian_version ]; then
     # We don't have $releasever into so manually replace it
     sed -i 's/r4.0/r4.1/g' /etc/apt/sources.list.d/qubes-r4.list
     # Ensure APT cache is cleaned
-    apt clean all
-    apt update
+    apt-get clean
+    apt-get update
     # "downgrade" to package without epoch
-    if ! apt install --allow-downgrades -y \
+    if ! apt-get install --allow-downgrades -y \
             'xen-utils-common=4.14*' \
             'libxenstore3.0=4.14*' \
             'xenstore-utils=4.14*'; then

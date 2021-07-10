@@ -33,6 +33,8 @@ Options:
     --skip-standalone-upgrade       Don't upgrade StandaloneVM to R4.1 repositories.
     --only-update                   Apply STAGE 0, 2 and resync appmenus only to
                                     selected qubes (coma separated list).
+    --keep-running                  List of extra VMs to keep running during update (coma separated list).
+                                    Can be useful if multiple updates proxy VMs are configured.
     --max-concurrency               How many TemplateVM/StandaloneVM to update in parallel in STAGE 1
                                     (default 4).
     
@@ -417,7 +419,7 @@ set_tmeta_size() {
 
 shutdown_nonessential_vms() {
     mapfile -t running_vms < <(qvm-ls --running --raw-list --fields name 2>/dev/null)
-    keep_running=( dom0 "$usbvm" "$netvm" "$updatevm")
+    keep_running=( dom0 "$usbvm" "$netvm" "$updatevm" "${extra_keep_running[@]}" )
 
     for vm in "${keep_running[@]}"
     do
@@ -431,7 +433,7 @@ shutdown_nonessential_vms() {
 
     # Ask before shutdown
     if [ ${#running_vms[@]} -gt 0 ]; then
-        if [ "$assumeyes" == "1" ] || confirm "---> Allow shutdown of unnecessary VM: ${running_vms[*]}?"; then
+        if [ "$assumeyes" == "1" ] || confirm "---> Allow shutdown of unnecessary VM (use --keep-running to exclude some): ${running_vms[*]}?"; then
             qvm-shutdown --wait "${running_vms[@]}"
         else
             exit 0
@@ -446,7 +448,7 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-if ! OPTS=$(getopt -o htrlsgydu:n:f:jkp --long help,all,update,template-standalone-upgrade,release-upgrade,dist-upgrade,setup-efi-grub,assumeyes,double-metadata-size,usbvm:,netvm:,updatevm:skip-template-upgrade,skip-standalone-upgrade,resync-appmenus-features,only-update:,max-concurrency: -n "$0" -- "$@"); then
+if ! OPTS=$(getopt -o htrlsgydu:n:f:jkp --long help,all,update,template-standalone-upgrade,release-upgrade,dist-upgrade,setup-efi-grub,assumeyes,double-metadata-size,usbvm:,netvm:,updatevm:skip-template-upgrade,skip-standalone-upgrade,resync-appmenus-features,only-update:,max-concurrency:,keep-running: -n "$0" -- "$@"); then
     echo "ERROR: Failed while parsing options."
     exit 1
 fi
@@ -455,6 +457,7 @@ eval set -- "$OPTS"
 
 # Common DNF options
 dnf_opts_noclean='--best --allowerasing --enablerepo=*testing*'
+extra_keep_running=()
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -478,6 +481,7 @@ while [[ $# -gt 0 ]]; do
         -n | --netvm ) netvm="$2"; shift ;;
         -f | --updatevm ) updatevm="$2"; shift ;;
         --only-update) only_update="$2"; shift ;;
+        --keep-running) IFS=, read -ra extra_keep_running <<<"$2"; shift ;;
         --max-concurrency) max_concurrency="$2"; shift ;;
         -j | --skip-template-upgrade ) skip_template_upgrade=1;;
         -k | --skip-standalone-upgrade ) skip_standalone_upgrade=1;;
