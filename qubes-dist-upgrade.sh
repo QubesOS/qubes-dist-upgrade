@@ -17,27 +17,27 @@ echo "Usage: $0 [OPTIONS]...
 This script is used for updating current QubesOS R4.0 to R4.1.
 
 Options:
-    --double-metadata-size          (STAGE 0) Double current LVM thin pool metadata size.
-    --update                        (STAGE 1) Update of dom0, TemplatesVM and StandaloneVM.
-    --template-standalone-upgrade   (STAGE 2) Upgrade templates and standalone VMs to R4.1 repository.
-    --release-upgrade               (STAGE 3) Update 'qubes-release' for Qubes R4.1.
-    --dist-upgrade                  (STAGE 4) Upgrade to Qubes R4.1 and Fedora 32 repositories.
-    --setup-efi-grub                (STAGE 5) Setup EFI Grub.
-    --all                           Execute all the above stages in one call.
+    --double-metadata-size, -d         (STAGE 0) Double current LVM thin pool metadata size.
+    --update, -t                       (STAGE 1) Update of dom0, TemplatesVM and StandaloneVM.
+    --template-standalone-upgrade, -l  (STAGE 2) Upgrade templates and standalone VMs to R4.1 repository.
+    --release-upgrade, -r              (STAGE 3) Update 'qubes-release' for Qubes R4.1.
+    --dist-upgrade, -s                 (STAGE 4) Upgrade to Qubes R4.1 and Fedora 32 repositories.
+    --setup-efi-grub, -g               (STAGE 5) Setup EFI Grub.
+    --all, -a                          Execute all the above stages in one call.
 
-    --assumeyes                     Automatically answer yes for all questions.
-    --usbvm                         Current UsbVM defined (default 'sys-usb').
-    --netvm                         Current NetVM defined (default 'sys-net').
-    --updatevm                      Current UpdateVM defined (default 'sys-firewall').
-    --skip-template-upgrade         Don't upgrade TemplateVM to R4.1 repositories.
-    --skip-standalone-upgrade       Don't upgrade StandaloneVM to R4.1 repositories.
-    --only-update                   Apply STAGE 0, 2 and resync appmenus only to
-                                    selected qubes (coma separated list).
-    --max-concurrency               How many TemplateVM/StandaloneVM to update in parallel in STAGE 1
-                                    (default 4).
-    
-    --resync-appmenus-features      Resync applications and features. To be ran individually
-                                    after reboot.
+    --assumeyes, -y                    Automatically answer yes for all questions.
+    --usbvm, -u                        Current UsbVM defined (default 'sys-usb').
+    --netvm, -n                        Current NetVM defined (default 'sys-net').
+    --updatevm, -f                     Current UpdateVM defined (default 'sys-firewall').
+    --skip-template-upgrade, -j        Don't upgrade TemplateVM to R4.1 repositories.
+    --skip-standalone-upgrade, -k      Don't upgrade StandaloneVM to R4.1 repositories.
+    --only-update                      Apply STAGE 0, 2 and resync appmenus only to
+                                       selected qubes (coma separated list).
+    --max-concurrency                  How many TemplateVM/StandaloneVM to update in parallel in STAGE 1
+                                       (default 4).
+
+    --resync-appmenus-features         Resync applications and features. To be ran individually
+                                       after reboot.
 "
     exit 1
 }
