@@ -401,7 +401,7 @@ fi
 eval set -- "$OPTS"
 
 # Common DNF options
-dnf_opts_noclean='--best --allowerasing --enablerepo=*testing*'
+dnf_opts_noclean='--best --allowerasing'
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
