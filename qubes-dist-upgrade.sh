@@ -158,7 +158,7 @@ fi
 eval set -- "$OPTS"
 
 # Common DNF options
-dnf_opts_noclean='--best --allowerasing --enablerepo=qubes-dom0-current-testing'
+dnf_opts_noclean='--best --allowerasing'
 extra_keep_running=()
 convert_policy=
 
