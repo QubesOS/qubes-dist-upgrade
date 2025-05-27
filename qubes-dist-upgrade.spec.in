@@ -17,7 +17,8 @@ Requires: xinput
 %install
 rm -rf $RPM_BUILD_ROOT
 install -D -m 755 qubes-dist-upgrade.sh $RPM_BUILD_ROOT/usr/sbin/qubes-dist-upgrade
-install -D -m 755 scripts/upgrade-template-standalone.sh $RPM_BUILD_ROOT/usr/lib/qubes/upgrade-template-standalone.sh
+install -D -m 755 -t $RPM_BUILD_ROOT/usr/lib/qubes/ scripts/upgrade-template-standalone.sh
+install -D -m 755 -t $RPM_BUILD_ROOT/usr/lib/qubes/ scripts/qubes-dist-upgrade-r4.2.sh
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -25,6 +26,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 /usr/sbin/qubes-dist-upgrade
 /usr/lib/qubes/upgrade-template-standalone.sh
+/usr/lib/qubes/qubes-dist-upgrade-r4.2.sh
 
 %changelog
 @CHANGELOG@

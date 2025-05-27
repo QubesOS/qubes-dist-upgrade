@@ -1,0 +1,4 @@
+host:
+  rpm:
+    build:
+    - qubes-dist-upgrade.spec
