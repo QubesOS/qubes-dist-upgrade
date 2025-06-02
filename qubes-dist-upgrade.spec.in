@@ -19,6 +19,10 @@ rm -rf $RPM_BUILD_ROOT
 install -D -m 755 qubes-dist-upgrade.sh $RPM_BUILD_ROOT/usr/sbin/qubes-dist-upgrade
 install -D -m 755 -t $RPM_BUILD_ROOT/usr/lib/qubes/ scripts/upgrade-template-standalone.sh
 install -D -m 755 -t $RPM_BUILD_ROOT/usr/lib/qubes/ scripts/qubes-dist-upgrade-r4.2.sh
+install -D -m 755 -t $RPM_BUILD_ROOT/usr/lib/qubes/ scripts/qubes-dist-upgrade-r4.3.sh
+install -D -m 755 -t $RPM_BUILD_ROOT/usr/lib/qubes/ scripts/qubes-dist-upgrade-r4.3-minimal-sys.py
+install -D -m 755 -t $RPM_BUILD_ROOT/usr/lib/qubes/ scripts/qubes-dist-upgrade-r4.3-pci.py
+install -D -m 755 -t $RPM_BUILD_ROOT/usr/lib/qubes/ scripts/qubes-dist-upgrade-r4.3-vm.sh
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -27,6 +31,10 @@ rm -rf $RPM_BUILD_ROOT
 /usr/sbin/qubes-dist-upgrade
 /usr/lib/qubes/upgrade-template-standalone.sh
 /usr/lib/qubes/qubes-dist-upgrade-r4.2.sh
+/usr/lib/qubes/qubes-dist-upgrade-r4.3.sh
+/usr/lib/qubes/qubes-dist-upgrade-r4.3-minimal-sys.py
+/usr/lib/qubes/qubes-dist-upgrade-r4.3-pci.py
+/usr/lib/qubes/qubes-dist-upgrade-r4.3-vm.sh
 
 %changelog
 @CHANGELOG@
