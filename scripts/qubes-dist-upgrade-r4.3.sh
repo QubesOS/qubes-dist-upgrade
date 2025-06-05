@@ -44,6 +44,10 @@ Options:
                                        Can be useful if multiple updates proxy VMs are configured.
     --max-concurrency                  How many TemplateVM/StandaloneVM to update in parallel in STAGE 1
                                        (default 4).
+    --enable-current-testing, -e       Enable current-testing repositories for the update time.
+                                       The enabling with this option do not persist after
+                                       successful update. If you want to keep it enabled,
+                                       use the normal method instead.
 "
 
     exit 1
@@ -152,7 +156,7 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
-if ! OPTS=$(getopt -o trsxyu:n:f:jk --long releasever:,help,update,release-upgrade,dist-upgrade,template-standalone-upgrade,finalize,check-supported-templates,all-pre-reboot,all-post-reboot,assumeyes,usbvm:,netvm:,updatevm:,skip-template-upgrade,skip-standalone-upgrade,only-update:,max-concurrency:,keep-running: -n "$0" -- "$@"); then
+if ! OPTS=$(getopt -o trsxyu:n:f:jke --long releasever:,help,update,release-upgrade,dist-upgrade,template-standalone-upgrade,finalize,check-supported-templates,all-pre-reboot,all-post-reboot,assumeyes,usbvm:,netvm:,updatevm:,skip-template-upgrade,skip-standalone-upgrade,only-update:,max-concurrency:,keep-running:,enable-current-testing -n "$0" -- "$@"); then
     echo "ERROR: Failed while parsing options."
     exit 1
 fi
@@ -163,6 +167,7 @@ eval set -- "$OPTS"
 dnf_opts_noclean='--best --allowerasing'
 extra_keep_running=()
 check_supported=
+enable_current_testing=
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -199,6 +204,10 @@ while [[ $# -gt 0 ]]; do
         -j | --skip-template-upgrade ) skip_template_upgrade=1;;
         -k | --skip-standalone-upgrade ) skip_standalone_upgrade=1;;
         -x | --finalize ) finalize=1;;
+        -e | --enable-current-testing )
+            enable_current_testing=1
+            dnf_opts_noclean+=' --enablerepo=qubes-dom0-current-testing'
+            ;;
     esac
     shift
 done
@@ -421,7 +430,11 @@ if [ "$assumeyes" == "1" ] || confirm "-> Launch upgrade process?"; then
                 qvm-run -q "$vm" "rm QubesIncoming/dom0/qubes-dist-upgrade-r4.3-vm.sh" || true
                 qvm-copy-to-vm "$vm" "$scriptsdir/qubes-dist-upgrade-r4.3-vm.sh"
                 exit_code=
-                qvm-run -q -u root -p "$vm" "bash /home/user/QubesIncoming/dom0/qubes-dist-upgrade-r4.3-vm.sh && rm -f /home/user/QubesIncoming/dom0/qubes-dist-upgrade-r4.3-vm.sh" || exit_code=$?
+                opt=
+                if [ "$enable_current_testing" ]; then
+                    opt=--enable-current-testing
+                fi
+                qvm-run -q -u root -p "$vm" "bash /home/user/QubesIncoming/dom0/qubes-dist-upgrade-r4.3-vm.sh $opt && rm -f /home/user/QubesIncoming/dom0/qubes-dist-upgrade-r4.3-vm.sh" || exit_code=$?
                 qvm-shutdown --wait "$vm"
                 if [ -n "$exit_code" ]; then
                     case "$exit_code" in
