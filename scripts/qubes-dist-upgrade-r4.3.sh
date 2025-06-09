@@ -328,6 +328,10 @@ if [ "$assumeyes" == "1" ] || confirm "-> Launch upgrade process?"; then
         echo "INFO: Xscreensaver has been killed. Desktop won't lock before next reboot."
         pkill xscreensaver || true
 
+        # Extra packages
+        packages=( "xfce4-screensaver" )
+        qubes-dom0-update $dnf_opts --downloadonly "${packages[@]}"
+
         # Don't clean cache of previous transaction for the requested packages.
         # shellcheck disable=SC2086
         qubes-dom0-update ${dnf_opts_noclean} --downloadonly --force-xen-upgrade --action=distro-sync || exit_code=$?
@@ -364,6 +368,13 @@ if [ "$assumeyes" == "1" ] || confirm "-> Launch upgrade process?"; then
                 systemctl preset-all
                 if [ -n "$autostart_before" ]; then
                     systemctl enable $autostart_before
+                fi
+
+                # Replace xscreensaver with xfce4-screensaver
+                if [ "$assumeyes" == 1 ]; then
+                    dnf swap --allowerasing -y xscreensaver-base xfce4-screensaver
+                else
+                    dnf swap --allowerasing xscreensaver-base xfce4-screensaver
                 fi
 
             else
