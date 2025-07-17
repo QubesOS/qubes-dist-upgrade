@@ -28,8 +28,9 @@ Options:
                                          - update PCI device IDs
                                          - enable minimal-netvm / minimal-usbvm services
                                          - cleanup salt states
+    --check-supported-templates        (STAGE 6) Check if all templates are supported
     --all-pre-reboot                   Execute stages 1 to 3
-    --all-post-reboot                  Execute stages 4 to 5
+    --all-post-reboot                  Execute stages 4 to 6
 
     --assumeyes, -y                    Automatically answer yes for all questions.
     --usbvm, -u                        Current UsbVM defined (default 'sys-usb').
@@ -151,7 +152,7 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
-if ! OPTS=$(getopt -o trsxyu:n:f:jk --long releasever:,help,update,release-upgrade,dist-upgrade,template-standalone-upgrade,finalize,all-pre-reboot,all-post-reboot,assumeyes,usbvm:,netvm:,updatevm:,skip-template-upgrade,skip-standalone-upgrade,only-update:,max-concurrency:,keep-running: -n "$0" -- "$@"); then
+if ! OPTS=$(getopt -o trsxyu:n:f:jk --long releasever:,help,update,release-upgrade,dist-upgrade,template-standalone-upgrade,finalize,check-supported-templates,all-pre-reboot,all-post-reboot,assumeyes,usbvm:,netvm:,updatevm:,skip-template-upgrade,skip-standalone-upgrade,only-update:,max-concurrency:,keep-running: -n "$0" -- "$@"); then
     echo "ERROR: Failed while parsing options."
     exit 1
 fi
@@ -161,7 +162,7 @@ eval set -- "$OPTS"
 # Common DNF options
 dnf_opts_noclean='--best --allowerasing'
 extra_keep_running=()
-convert_policy=
+check_supported=
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -181,11 +182,13 @@ while [[ $# -gt 0 ]]; do
         --all-post-reboot)
             template_standalone_upgrade=1
             finalize=1
+            check_supported=1
             ;;
         -t | --update ) update=1;;
         -l | --template-standalone-upgrade) template_standalone_upgrade=1;;
         -r | --release-upgrade) release_upgrade=1;;
         -s | --dist-upgrade ) dist_upgrade=1;;
+        --check-supported-templates ) check_supported=1;;
         -y | --assumeyes ) assumeyes=1;;
         -u | --usbvm ) usbvm="$2"; shift ;;
         -n | --netvm ) netvm="$2"; shift ;;
@@ -517,5 +520,41 @@ if [ "$assumeyes" == "1" ] || confirm "-> Launch upgrade process?"; then
                 fi
             fi
         fi
+    fi
+
+    if [ -n "$check_supported" ]; then
+        echo "---> (STAGE 6) Checking if all templates (and standalones) are supported in R4.3"
+        for line in $(qvm-ls --raw-data --fields name,klass); do
+            name=${line%|*}
+            klass=${line#*|}
+            if [ "$klass" != "TemplateVM" ] && [ "$klass" != "StandaloneVM" ]; then
+                continue
+            fi
+            dist=$(qvm-features "$name" os-distribution || :)
+            dist_ver=$(qvm-features "$name" os-version || :)
+            case "$dist" in
+                fedora)
+                    if [ "$dist_ver" -ge 41 ]; then
+                        echo "$name: supported in R4.3"
+                    else
+                        echo "$name: UNSUPPORTED in R4.3 - upgrade to a newer version"
+                    fi
+                    ;;
+                debian)
+                    if [ "$dist_ver" -ge 12 ]; then
+                        echo "$name: supported in R4.3"
+                    else
+                        echo "$name: UNSUPPORTED in R4.3 - upgrade to a newer version"
+                    fi
+                    ;;
+                whonix)
+                    if [ "$dist_ver" -ge 17 ]; then
+                        echo "$name: supported in R4.3"
+                    else
+                        echo "$name: UNSUPPORTED in R4.3 - upgrade to a newer version"
+                    fi
+                    ;;
+            esac
+        done
     fi
 fi

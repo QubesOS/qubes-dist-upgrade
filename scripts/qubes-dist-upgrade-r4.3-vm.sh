@@ -17,7 +17,7 @@ fi
 if [ -e /etc/fedora-release ]; then
     releasever="$(awk '{print $3}' /etc/fedora-release)"
     # Check Fedora supported release
-    if [ "$releasever" -lt 40 ]; then
+    if [ "$releasever" -lt 41 ]; then
         exit 2
     fi
     # Backup R4.2 repository file
