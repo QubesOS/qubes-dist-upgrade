@@ -28,6 +28,7 @@ Options:
                                          - update PCI device IDs
                                          - enable minimal-netvm / minimal-usbvm services
                                          - cleanup salt states
+                                         - enable preloaded disposables if system has more than 16GB memory
     --check-supported-templates        (STAGE 6) Check if all templates are supported
     --all-pre-reboot                   Execute stages 1 to 3
     --all-post-reboot                  Execute stages 4 to 6
@@ -532,6 +533,13 @@ if [ "$assumeyes" == "1" ] || confirm "-> Launch upgrade process?"; then
                     lvremove "$root_group_name/Qubes42UpgradeBackup"
                 fi
             fi
+        fi
+        if [ "$(xl info total_memory)" -ge 16000 ]; then
+            echo "--> (STAGE 5) Enabling disposable qubes preloading"
+            qubesctl top.enable qvm.disposable-preload pillar=True
+            qubesctl state.apply qvm.disposable-preload
+        else
+            echo "--> (STAGE 5) Preloading disposable qubes skipped (below 16GB RAM)"
         fi
     fi
 
