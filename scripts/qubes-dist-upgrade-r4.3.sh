@@ -235,7 +235,7 @@ update_prechecks
 
 # Automatically add qubes providing dom0 input devices to remain powered on
 if which xinput > /dev/null; then
-    read -r -a xinput_qubes <<< "$(xinput list --name-only | sed -n 's/\(^[a-zA-Z][a-zA-Z0-9_-]*\):.*$/\1/p')"
+    mapfile -t xinput_qubes <<< "$(xinput list --name-only | sed -n 's/\(^[a-zA-Z][a-zA-Z0-9_-]*\):.*$/\1/p')"
     for qube in "${xinput_qubes[@]}"
     do
         if qvm-check -q "$qube" 2>/dev/null; then
