@@ -13,7 +13,7 @@ scriptsdir=/usr/lib/qubes
 #-----------------------------------------------------------------------------#
 
 usage() {
-echo "Usage: $0 [OPTIONS]...
+echo "
 
 This script is used for updating current QubesOS R4.2 to R4.3.
 
