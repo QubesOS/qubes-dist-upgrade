@@ -152,11 +152,6 @@ has_updated_qubes_version() {
 
 #-----------------------------------------------------------------------------#
 
-if [[ $EUID -ne 0 ]]; then
-    echo "ERROR: This script must be run with root permissions"
-    exit 1
-fi
-
 if ! OPTS=$(getopt -o trsxyu:n:f:jke --long releasever:,help,update,release-upgrade,dist-upgrade,template-standalone-upgrade,finalize,check-supported-templates,all-pre-reboot,all-post-reboot,assumeyes,usbvm:,netvm:,updatevm:,skip-template-upgrade,skip-standalone-upgrade,only-update:,max-concurrency:,keep-running:,enable-current-testing -n "$0" -- "$@"); then
     echo "ERROR: Failed while parsing options."
     exit 1
@@ -212,6 +207,11 @@ while [[ $# -gt 0 ]]; do
     esac
     shift
 done
+
+if [[ $EUID -ne 0 ]]; then
+    echo "ERROR: This script must be run with root permissions"
+    exit 1
+fi
 
 if [ "$assumeyes" == "1" ];  then
     dnf_opts_noclean="${dnf_opts_noclean} -y"
