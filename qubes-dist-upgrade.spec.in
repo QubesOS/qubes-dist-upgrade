@@ -2,7 +2,7 @@ Name:		qubes-dist-upgrade
 Version:	@VERSION@
 Release:	1%{?dist}
 Summary:	Qubes dom0 dist upgrade
-License:	GPLv2
+License:	GPL-2.0-only
 BuildArch:	noarch
 Source0:	%{name}-%{version}.tar.gz
 
