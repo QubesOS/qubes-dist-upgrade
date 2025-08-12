@@ -6,6 +6,7 @@ License:	GPL-2.0-only
 BuildArch:	noarch
 Source0:	%{name}-%{version}.tar.gz
 
+Requires: lvm2
 Requires: xinput
 
 %description
