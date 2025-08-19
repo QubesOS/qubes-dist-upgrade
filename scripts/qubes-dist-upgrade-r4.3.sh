@@ -13,7 +13,7 @@ scriptsdir=/usr/lib/qubes
 #-----------------------------------------------------------------------------#
 
 usage() {
-echo "Usage: $0 [OPTIONS]...
+echo "
 
 This script is used for updating current QubesOS R4.2 to R4.3.
 
@@ -28,7 +28,7 @@ Options:
                                          - update PCI device IDs
                                          - enable minimal-netvm / minimal-usbvm services
                                          - cleanup salt states
-                                         - enable preloaded disposables if system has more than 16GB memory
+                                         - enable preloaded disposables if system has more than 15GB memory
     --check-supported-templates        (STAGE 6) Check if all templates are supported
     --all-pre-reboot                   Execute stages 1 to 3
     --all-post-reboot                  Execute stages 4 to 6
@@ -152,7 +152,7 @@ has_updated_qubes_version() {
 
 #-----------------------------------------------------------------------------#
 
-if ! OPTS=$(getopt -o trsxyu:n:f:jke --long releasever:,help,update,release-upgrade,dist-upgrade,template-standalone-upgrade,finalize,check-supported-templates,all-pre-reboot,all-post-reboot,assumeyes,usbvm:,netvm:,updatevm:,skip-template-upgrade,skip-standalone-upgrade,only-update:,max-concurrency:,keep-running:,enable-current-testing -n "$0" -- "$@"); then
+if ! OPTS=$(getopt -o tlrsxyu:n:f:jke --long releasever:,help,update,release-upgrade,dist-upgrade,template-standalone-upgrade,finalize,check-supported-templates,all-pre-reboot,all-post-reboot,assumeyes,usbvm:,netvm:,updatevm:,skip-template-upgrade,skip-standalone-upgrade,only-update:,max-concurrency:,keep-running:,enable-current-testing -n "$0" -- "$@"); then
     echo "ERROR: Failed while parsing options."
     exit 1
 fi
@@ -534,12 +534,12 @@ if [ "$assumeyes" == "1" ] || confirm "-> Launch upgrade process?"; then
                 fi
             fi
         fi
-        if [ "$(xl info total_memory)" -ge 16000 ]; then
+        if [ "$(xl info total_memory)" -ge 15000 ]; then
             echo "--> (STAGE 5) Enabling disposable qubes preloading"
             qubesctl top.enable qvm.disposable-preload pillar=True
             qubesctl state.apply qvm.disposable-preload
         else
-            echo "--> (STAGE 5) Preloading disposable qubes skipped (below 16GB RAM)"
+            echo "--> (STAGE 5) Preloading disposable qubes skipped (below 15GB RAM)"
         fi
     fi
 
