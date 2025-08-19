@@ -32,11 +32,6 @@ exit 1
 
 #-----------------------------------------------------------------------------#
 
-if [[ $EUID -ne 0 ]]; then
-   echo "ERROR: This script must be run with root permissions"
-   exit 1
-fi
-
 ORIG_ARGV=("$@")
 OPTS=$(getopt -q -o h  --long help,releasever: -n "$0" -- "$@") || :
 
@@ -60,6 +55,11 @@ done
 
 if [ -z "$releasever" ] || [ -n "$help" ]; then
     usage
+fi
+
+if [[ $EUID -ne 0 ]]; then
+   echo "ERROR: This script must be run with root permissions"
+   exit 1
 fi
 
 exec "$scriptsdir/qubes-dist-upgrade-r$releasever.sh" "${ORIG_ARGV[@]}"
