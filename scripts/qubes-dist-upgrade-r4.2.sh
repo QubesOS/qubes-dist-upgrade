@@ -340,7 +340,7 @@ if [ "$assumeyes" == "1" ] || confirm "-> Launch upgrade process?"; then
                 for qube in "${extra_keep_running[@]}"; do
                     qvm_shutdown_exclude+=("--exclude=$qube")
                 done
-                qvm-shutdown --wait --all "${qvm_shutdown_exclude[@]}"
+                qvm-shutdown --wait --all --force "${qvm_shutdown_exclude[@]}"
 
                 rpmsave_policy_files_before=( "/etc/qubes-rpc/policy/"*.rpmsave )
                 update_ret=0
