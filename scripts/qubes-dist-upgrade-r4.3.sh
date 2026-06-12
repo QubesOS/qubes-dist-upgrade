@@ -252,7 +252,7 @@ if [ -z "$DIST_UPGRADE_LOGGED" ]; then
     log_path=/var/log/qubes-dist-upgrade.log
     echo "INFO: Saving log to $log_path"
     echo "Starting '$original_command' at $(date -R)" >> "$log_path"
-    exec script -e -c "DIST_UPGRADE_LOGGED=$log_path $original_command" -a "$log_path"
+    exec script -q -e -c "DIST_UPGRADE_LOGGED=$log_path $original_command" -a "$log_path"
     echo "ERROR: failed to log output"
     exit 1
 fi
